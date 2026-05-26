@@ -52,11 +52,11 @@ int main() {
     unordered_map<int, vector<int>> grafo;
 
     int idMaximo = cargarAeropuertos("aeropuertos_limpio.txt", aeropuertos, indiceBusqueda, grafo);
-    cargarRutas("rutas_limpio.txt", grafo, aeropuertos);
+    int aristas = cargarRutas("rutas_limpio.txt", grafo, aeropuertos);
 
-    cout << "Aeropuertos cargados: " << aeropuertos.size() << endl;
-    cout << "Nodos con rutas de salida: " << grafo.size() << endl;
-    
+    cout << "Aeropuertos cargados(Nodos): " << aeropuertos.size() << endl;
+    cout << "Aristas: " << aristas << endl;
+
     string entrada;
     cout << endl << "Ingrese nombre o codigo IATA del aeropuerto de origen: ";
     getline(cin, entrada);

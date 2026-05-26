@@ -58,6 +58,7 @@ int cargarAeropuertos(const string &nombreArchivo, unordered_map<int, Aeropuerto
         aeropuerto.longitud = stod(campos[7]);
 
         aeropuertos[aeropuerto.id] = aeropuerto;
+        grafo[aeropuerto.id];
         idMaximo = max(idMaximo, aeropuerto.id);
 
         if (!aeropuerto.iata.empty()) {
@@ -71,14 +72,14 @@ int cargarAeropuertos(const string &nombreArchivo, unordered_map<int, Aeropuerto
     return idMaximo;
 }
 
-void cargarRutas(const string &nombreArchivo, unordered_map<int, vector<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos) {
+int cargarRutas(const string &nombreArchivo, unordered_map<int, vector<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos) {
     ifstream archivo(nombreArchivo);
 
     if (!archivo.is_open()) {
         cout << "No se pudo abrir el archivo de rutas." << endl;
-        return;
+        return 0;
     }
-
+    int cont = 0;
     string linea;
     getline(archivo, linea);
 
@@ -93,7 +94,9 @@ void cargarRutas(const string &nombreArchivo, unordered_map<int, vector<int>> &g
         int idDestino = stoi(campos[5]);
 
         grafo[idOrigen].push_back(idDestino);
+        cont++;
     }
 
     archivo.close();
+    return cont;
 }

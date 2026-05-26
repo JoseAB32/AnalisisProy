@@ -3,82 +3,111 @@
 #define form(i,s,e) for(int i = s; i < e; i++)
 using namespace std;
 
-vector<bool> vis;
-vector<int> st, num_componente;
-vector<vector<int>> componente;
+vector<bool> visitados;
+vector<int> st, scc;
+vector<vector<int>> nodos_componente;
+
 void dfs(int u, unordered_map<int, vector<int>> &grafo, int numero_componente)
 {
-  componente[numero_componente].push_back(u);
-  num_componente[u] = numero_componente;
+  nodos_componente[numero_componente].push_back(u);
+  scc[u] = numero_componente;
 
-  vis[u] = true;
+  visitados[u] = true;
   auto itGrafo = grafo.find(u);
-
   for(auto v: itGrafo->second)
-    if(vis[v] == false)
+    if(visitados[v] == false)
       dfs(v,grafo,numero_componente);
       
   st.push_back(u);
 }
 
-bool contarGruposAislados(int u, unordered_map<int, vector<int>> &grafo)
-{
-  int componente_actual = num_componente[u];
-  auto itGrafo = grafo.find(u);
-  
 
-  for(auto v: itGrafo->second)
-      if(!contarGruposAislados(v,grafo) or componente_actual != num_componente[v] )
-        return false;
-  return true;
+void dfs1(unordered_map<int, vector<int>> &grafo,int maxId )
+{
+  visitados.assign(maxId + 1, false);
+  scc.assign(maxId + 1, 0);
+  nodos_componente.assign(maxId + 1, vector<int> ());
+  for(auto par: grafo)
+    if(visitados[par.first] == false)
+      dfs(par.first, grafo, 0);
 }
 
+unordered_map<int, vector<int>> invertir_grafo(unordered_map<int, vector<int>> &grafo, int maxId)
+{
+  unordered_map<int, vector<int>> grafo_invertido;
+  for(auto par: grafo)
+  {
+    grafo_invertido[par.first];
+    for(auto v: par.second)
+      grafo_invertido[v].push_back(par.first);
+  }
+  return grafo_invertido;
+}
+
+int dfs2(unordered_map<int, vector<int>> &grafo_invertido, int maxId)
+{
+  reverse(st.begin(), st.end());
+  visitados.assign(maxId + 1, false);
+  nodos_componente.assign(maxId + 1, vector<int> ());
+  int max = st.size(), cont = 0;
+  form(i,0,max)
+    if(visitados[st[i]] == false )
+      dfs(st[i],grafo_invertido,cont), cont++;
+  return cont;
+}
+
+bool contarGruposAislados(int u, unordered_map<int, vector<int>> &grafo)
+{
+  visitados[u] = true;
+  int componente_actual = scc[u];
+  auto itGrafo = grafo.find(u);
+
+  for(auto v: itGrafo->second)
+  {
+    if(visitados[v] == false)
+      if(!contarGruposAislados(v,grafo))
+        return false;
+    if(componente_actual != scc[v])
+      return false;
+  }
+  return true;
+}
 
 int main()
 {
   unordered_map<int, Aeropuerto> aeropuertos;
   unordered_map<string, int> indiceBusqueda;
-  unordered_map<int, vector<int>> grafo, grafo_invertido;
+  unordered_map<int, vector<int>> grafo;
 
-  cargarAeropuertos("aeropuertos_limpio.txt", aeropuertos, indiceBusqueda, grafo);
+  int maxId = cargarAeropuertos("aeropuertos_limpio.txt", aeropuertos, indiceBusqueda, grafo);
   cargarRutas("rutas_limpio.txt", grafo, aeropuertos);
 
-  int maxId = 0;
-  for (const auto &par : aeropuertos) {
-    if (par.first > maxId) {
-      maxId = par.first;
-    }
-  }
+  
+  dfs1(grafo, maxId);
+  unordered_map<int, vector<int>> grafo_invertido = invertir_grafo(grafo, maxId);
+  
+  cout <<"Componentes fuertemente conexas: " <<dfs2(grafo_invertido, maxId) << endl;
 
-  vis.resize(maxId + 1, false);
-  num_componente.resize(maxId + 1, 0);
-  componente.resize(maxId + 1);
-  form(i,0,maxId + 1)
-    if(vis[i] == false && grafo.find(i) != grafo.end())
-      dfs(i,grafo,0);
-
-
-  form(i,0,maxId + 1)
-    if (grafo.find(i) != grafo.end())
-      for(auto v: grafo[i])
-        grafo_invertido[v].push_back(i);
-    
-  componente.assign(maxId + 1,vector<int>());
-  reverse(st.begin(), st.end());
-  vis.assign(maxId + 1, false);
-  int max = st.size(), cont = 0;
-  form(i,0,max)
-    if(vis[st[i]] == false )
-      dfs(st[i],grafo_invertido,cont), cont++;
-
-  cout << cont << endl;
-
-  cont = 0;
-  form(i,0,componente.size())
-    form(j, 0, componente[i].size())
-      if(grafo.find(componente[i][j]) != grafo.end() and vis[componente[i][j]] == false and contarGruposAislados(componente[i][j],grafo))
+  visitados.assign(maxId + 1, false);
+  int cont = 0, maxAislado = -1, maxSCC = -1;
+  form(i,0,nodos_componente.size())
+    form(j, 0, nodos_componente[i].size())
+    {
+      maxSCC = max(maxSCC, (int)nodos_componente[i].size());
+      if(visitados[nodos_componente[i][j]] == false and 
+       contarGruposAislados(nodos_componente[i][j],grafo))
+      {
+        maxAislado = max(maxAislado, (int)nodos_componente[i].size());
         cont++;
+      }
+      else
+        break;
+    }
 
-  cout << cont << endl;
+  
+  cout <<"Componente fuertemente conexa mas grande: " << maxSCC << endl;
+
+  cout<<"Grupos Aislados: " << cont << endl;
+  cout<<"Grupo Aislado mas grande: " << maxAislado << endl;
   return 0;
 }
