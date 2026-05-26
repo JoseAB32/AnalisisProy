@@ -5,9 +5,10 @@
 
 using namespace std;
 
-int mostrarYContarAeropuertosAlcanzables(int idOrigen, const vector<vector<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos, int maxVuelos) {
-    vector<int> dist(grafo.size(), -1);
+int mostrarYContarAeropuertosAlcanzables(int idOrigen, int idMaximo, const unordered_map<int, vector<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos, int maxVuelos) {
+    vector<int> dist(idMaximo + 1, -1);
     queue<int> cola;
+
 
     dist[idOrigen] = 0;
     cola.push(idOrigen);
@@ -24,9 +25,11 @@ int mostrarYContarAeropuertosAlcanzables(int idOrigen, const vector<vector<int>>
             continue;
         }
         
+        auto itGrafo = grafo.find(actual);
 
-        for (int vecino : grafo[actual]) {
-            if (vecino >= 0 && vecino < dist.size() && dist[vecino] == -1) {
+
+        for (int vecino : itGrafo->second) {
+            if (dist[vecino] == -1) {
                 dist[vecino] = dist[actual] + 1;
                 cola.push(vecino);
 
@@ -46,14 +49,14 @@ int mostrarYContarAeropuertosAlcanzables(int idOrigen, const vector<vector<int>>
 int main() {
     unordered_map<int, Aeropuerto> aeropuertos;
     unordered_map<string, int> indiceBusqueda;
-    vector<vector<int>> grafo;
+    unordered_map<int, vector<int>> grafo;
 
-    cargarAeropuertos("aeropuertos_limpio.txt", aeropuertos, indiceBusqueda, grafo);
+    int idMaximo = cargarAeropuertos("aeropuertos_limpio.txt", aeropuertos, indiceBusqueda, grafo);
     cargarRutas("rutas_limpio.txt", grafo, aeropuertos);
 
     cout << "Aeropuertos cargados: " << aeropuertos.size() << endl;
     cout << "Nodos con rutas de salida: " << grafo.size() << endl;
-
+    
     string entrada;
     cout << endl << "Ingrese nombre o codigo IATA del aeropuerto de origen: ";
     getline(cin, entrada);
@@ -68,7 +71,7 @@ int main() {
     int idOrigen = indiceBusqueda[clave];
     const int MAX_VUELOS = 4;
 
-    int total = mostrarYContarAeropuertosAlcanzables(idOrigen, grafo, aeropuertos, MAX_VUELOS);
+    int total = mostrarYContarAeropuertosAlcanzables(idOrigen, idMaximo, grafo, aeropuertos, MAX_VUELOS);
 
     cout << endl;
     cout << "Aeropuerto origen: " << aeropuertos[idOrigen].nombre << " (" << aeropuertos[idOrigen].iata << ")" << endl;

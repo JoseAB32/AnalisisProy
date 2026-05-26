@@ -27,12 +27,12 @@ vector<string> separarPorTabulador(const string &linea) {
     return campos;
 }
 
-void cargarAeropuertos(const string &nombreArchivo, unordered_map<int, Aeropuerto> &aeropuertos, unordered_map<string, int> &indiceBusqueda, vector<vector<int>> &grafo) {
+int cargarAeropuertos(const string &nombreArchivo, unordered_map<int, Aeropuerto> &aeropuertos, unordered_map<string, int> &indiceBusqueda, unordered_map<int, vector<int>> &grafo) {
     ifstream archivo(nombreArchivo);
 
     if (!archivo.is_open()) {
         cout << "No se pudo abrir el archivo de aeropuertos." << endl;
-        return;
+        return -1;
     }
 
     string linea;
@@ -58,9 +58,7 @@ void cargarAeropuertos(const string &nombreArchivo, unordered_map<int, Aeropuert
         aeropuerto.longitud = stod(campos[7]);
 
         aeropuertos[aeropuerto.id] = aeropuerto;
-        if (aeropuerto.id > idMaximo) {
-            idMaximo = aeropuerto.id;
-        }
+        idMaximo = max(idMaximo, aeropuerto.id);
 
         if (!aeropuerto.iata.empty()) {
             indiceBusqueda[convertirMinusculas(aeropuerto.iata)] = aeropuerto.id;
@@ -69,14 +67,11 @@ void cargarAeropuertos(const string &nombreArchivo, unordered_map<int, Aeropuert
         indiceBusqueda[convertirMinusculas(aeropuerto.nombre)] = aeropuerto.id;
     }
 
-    if (idMaximo >= 0) {
-        grafo.assign((idMaximo) + 1, vector<int>());
-    }
-
     archivo.close();
+    return idMaximo;
 }
 
-void cargarRutas(const string &nombreArchivo, vector<vector<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos) {
+void cargarRutas(const string &nombreArchivo, unordered_map<int, vector<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos) {
     ifstream archivo(nombreArchivo);
 
     if (!archivo.is_open()) {
@@ -97,9 +92,7 @@ void cargarRutas(const string &nombreArchivo, vector<vector<int>> &grafo, const 
         int idOrigen = stoi(campos[3]);
         int idDestino = stoi(campos[5]);
 
-        if (aeropuertos.find(idOrigen) != aeropuertos.end() && aeropuertos.find(idDestino) != aeropuertos.end()) {
-            grafo[idOrigen].push_back(idDestino);
-        }
+        grafo[idOrigen].push_back(idDestino);
     }
 
     archivo.close();
