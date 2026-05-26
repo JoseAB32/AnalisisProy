@@ -19,6 +19,7 @@ std::vector<std::string> separarPorTabulador(const std::string &linea);
 int cargarAeropuertos(const std::string &nombreArchivo, std::unordered_map<int, Aeropuerto> &aeropuertos, std::unordered_map<std::string, int> &indiceBusqueda, std::unordered_map<int, std::set<int>> &grafo);
 int cargarRutas(const std::string &nombreArchivo, std::unordered_map<int, std::set<int>> &grafo, const std::unordered_map<int, Aeropuerto> &aeropuertos);
 int cargarRutasNoDirido(const std::string &nombreArchivo, std::unordered_map<int, std::set<int>> &grafo, const std::unordered_map<int, Aeropuerto> &aeropuertos);
+int cargarRutasPorAerolinea(const std::string &nombreArchivo, std::unordered_map<int, std::set<int>> &grafo_Aerolinea, const std::unordered_map<int, Aeropuerto> &aeropuertos, const std::string &aerolineaBuscada);
 
 
 #endif

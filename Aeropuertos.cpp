@@ -135,3 +135,46 @@ int cargarRutasNoDirido(const string &nombreArchivo, unordered_map<int, set<int>
     archivo.close();
     return cont;
 }
+
+int cargarRutasPorAerolinea(const string &nombreArchivo, unordered_map<int, set<int>> &grafo_Aerolinea, const unordered_map<int, Aeropuerto> &aeropuertos, const string &aerolineaBuscada) {
+    ifstream archivo(nombreArchivo);
+
+    if (!archivo.is_open()) {
+        cout << "No se pudo abrir el archivo de rutas." << endl;
+        return 0;
+    }
+
+    int cont = 0;
+    string linea;
+    getline(archivo, linea);
+
+    while (getline(archivo, linea)) {
+        vector<string> campos = separarPorTabulador(linea);
+
+        if (campos.size() < 6) {
+            continue;
+        }
+
+        string aerolinea = campos[0];
+
+        if (aerolinea != aerolineaBuscada) {
+            continue;
+        }
+
+        int idOrigen = stoi(campos[3]);
+        int idDestino = stoi(campos[5]);
+
+        if (aeropuertos.find(idOrigen) == aeropuertos.end() || aeropuertos.find(idDestino) == aeropuertos.end()) {
+            continue;
+        }
+
+        auto ptr = grafo_Aerolinea[idOrigen].insert(idDestino);
+
+        if (ptr.second) {
+            cont++;
+        }
+    }
+
+    archivo.close();
+    return cont;
+}
