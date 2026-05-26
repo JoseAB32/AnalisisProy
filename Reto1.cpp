@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int mostrarYContarAeropuertosAlcanzables(int idOrigen, int idMaximo, const unordered_map<int, vector<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos, int maxVuelos) {
+int mostrarYContarAeropuertosAlcanzables(int idOrigen, int idMaximo, const unordered_map<int, set<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos, int maxVuelos) {
     vector<int> dist(idMaximo + 1, -1);
     queue<int> cola;
 
@@ -49,13 +49,13 @@ int mostrarYContarAeropuertosAlcanzables(int idOrigen, int idMaximo, const unord
 int main() {
     unordered_map<int, Aeropuerto> aeropuertos;
     unordered_map<string, int> indiceBusqueda;
-    unordered_map<int, vector<int>> grafo;
+    unordered_map<int, set<int>> grafo;
 
     int idMaximo = cargarAeropuertos("aeropuertos_limpio.txt", aeropuertos, indiceBusqueda, grafo);
     int aristas = cargarRutas("rutas_limpio.txt", grafo, aeropuertos);
 
     cout << "Aeropuertos cargados(Nodos): " << aeropuertos.size() << endl;
-    cout << "Aristas: " << aristas << endl;
+    cout << "Aristas Unidireccionales: " << aristas << endl;
 
     string entrada;
     cout << endl << "Ingrese nombre o codigo IATA del aeropuerto de origen: ";
@@ -69,7 +69,7 @@ int main() {
     }
 
     int idOrigen = indiceBusqueda[clave];
-    const int MAX_VUELOS = 4;
+    const int MAX_VUELOS = 5;
 
     int total = mostrarYContarAeropuertosAlcanzables(idOrigen, idMaximo, grafo, aeropuertos, MAX_VUELOS);
 
