@@ -101,3 +101,37 @@ int cargarRutas(const string &nombreArchivo, unordered_map<int, set<int>> &grafo
     archivo.close();
     return cont;
 }
+
+int cargarRutasNoDirido(const string &nombreArchivo, unordered_map<int, set<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos) {
+    ifstream archivo(nombreArchivo);
+
+    if (!archivo.is_open()) {
+        cout << "No se pudo abrir el archivo de rutas." << endl;
+        return 0;
+    }
+    int cont = 0;
+    string linea;
+    getline(archivo, linea);
+
+    while (getline(archivo, linea)) {
+        vector<string> campos = separarPorTabulador(linea);
+
+        if (campos.size() < 6) {
+            continue;
+        }
+
+        int idOrigen = stoi(campos[3]);
+        int idDestino = stoi(campos[5]);
+
+        auto ptr1 = grafo[idOrigen].insert(idDestino);
+        auto ptr2 = grafo[idDestino].insert(idOrigen);
+        if(ptr1.second)
+          cont++;
+        if(ptr2.second)
+          cont++;
+
+    }
+
+    archivo.close();
+    return cont;
+}

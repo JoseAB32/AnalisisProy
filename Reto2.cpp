@@ -6,7 +6,7 @@ using namespace std;
 vector<bool> visitados;
 vector<int> st, scc;
 
-void dfs(int u, unordered_map<int, vector<int>> &grafo, int numero_componente)
+void dfs(int u, unordered_map<int, set<int>> &grafo, int numero_componente)
 {
   scc[u] = numero_componente;
 
@@ -20,7 +20,7 @@ void dfs(int u, unordered_map<int, vector<int>> &grafo, int numero_componente)
 }
 
 
-void dfs1(unordered_map<int, vector<int>> &grafo,int maxId )
+void dfs1(unordered_map<int, set<int>> &grafo,int maxId )
 {
   visitados.assign(maxId + 1, false);
   scc.assign(maxId + 1, 0);
@@ -29,20 +29,20 @@ void dfs1(unordered_map<int, vector<int>> &grafo,int maxId )
       dfs(par.first, grafo, 0);
 }
 
-unordered_map<int, vector<int>> invertir_grafo(unordered_map<int, vector<int>> &grafo, int maxId)
+unordered_map<int, set<int>> invertir_grafo(unordered_map<int, set<int>> &grafo, int maxId)
 {
-  unordered_map<int, vector<int>> grafo_invertido;
+  unordered_map<int, set<int>> grafo_invertido;
   for(auto par: grafo)
   {
     grafo_invertido[par.first];
     for(auto v: par.second)
-      grafo_invertido[v].push_back(par.first);
+      grafo_invertido[v].insert(par.first);
   }
   return grafo_invertido;
 }
 
 int maxSCC = -1; vector<int> scc_tamanio;
-int dfs2(unordered_map<int, vector<int>> &grafo_invertido, int maxId)
+int dfs2(unordered_map<int, set<int>> &grafo_invertido, int maxId)
 {
   reverse(st.begin(), st.end());
 
@@ -62,7 +62,7 @@ int dfs2(unordered_map<int, vector<int>> &grafo_invertido, int maxId)
 }
 
 int maxAislado = -1;
-int contarGruposAislados(unordered_map<int, vector<int>> &grafo)
+int contarGruposAislados(unordered_map<int, set<int>> &grafo)
 {
   unordered_map<int, bool> gruposAislados;
   for(auto par: grafo)
@@ -89,14 +89,14 @@ int main()
 {
   unordered_map<int, Aeropuerto> aeropuertos;
   unordered_map<string, int> indiceBusqueda;
-  unordered_map<int, vector<int>> grafo;
+  unordered_map<int, set<int>> grafo;
 
   int maxId = cargarAeropuertos("aeropuertos_limpio.txt", aeropuertos, indiceBusqueda, grafo);
   cargarRutas("rutas_limpio.txt", grafo, aeropuertos);
 
   
   dfs1(grafo, maxId);
-  unordered_map<int, vector<int>> grafo_invertido = invertir_grafo(grafo, maxId);
+  unordered_map<int, set<int>> grafo_invertido = invertir_grafo(grafo, maxId);
   
   cout <<"Componentes fuertemente conexas: " <<dfs2(grafo_invertido, maxId) << endl;
   cout <<"Componente fuertemente conexa mas grande: " << maxSCC << endl;

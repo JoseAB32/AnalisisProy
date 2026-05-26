@@ -55,7 +55,7 @@ int main() {
     int aristas = cargarRutas("rutas_limpio.txt", grafo, aeropuertos);
 
     cout << "Aeropuertos cargados(Nodos): " << aeropuertos.size() << endl;
-    cout << "Aristas: " << aristas << endl;
+    cout << "Aristas Unidireccionales: " << aristas << endl;
 
     string entrada;
     cout << endl << "Ingrese nombre o codigo IATA del aeropuerto de origen: ";
