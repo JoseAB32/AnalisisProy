@@ -27,7 +27,7 @@ vector<string> separarPorTabulador(const string &linea) {
     return campos;
 }
 
-int cargarAeropuertos(const string &nombreArchivo, unordered_map<int, Aeropuerto> &aeropuertos, unordered_map<string, int> &indiceBusqueda, unordered_map<int, vector<int>> &grafo) {
+int cargarAeropuertos(const string &nombreArchivo, unordered_map<int, Aeropuerto> &aeropuertos, unordered_map<string, int> &indiceBusqueda, unordered_map<int, set<int>> &grafo) {
     ifstream archivo(nombreArchivo);
 
     if (!archivo.is_open()) {
@@ -72,7 +72,7 @@ int cargarAeropuertos(const string &nombreArchivo, unordered_map<int, Aeropuerto
     return idMaximo;
 }
 
-int cargarRutas(const string &nombreArchivo, unordered_map<int, vector<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos) {
+int cargarRutas(const string &nombreArchivo, unordered_map<int, set<int>> &grafo, const unordered_map<int, Aeropuerto> &aeropuertos) {
     ifstream archivo(nombreArchivo);
 
     if (!archivo.is_open()) {
@@ -93,8 +93,9 @@ int cargarRutas(const string &nombreArchivo, unordered_map<int, vector<int>> &gr
         int idOrigen = stoi(campos[3]);
         int idDestino = stoi(campos[5]);
 
-        grafo[idOrigen].push_back(idDestino);
-        cont++;
+        auto ptr = grafo[idOrigen].insert(idDestino);
+        if(ptr.second)
+          cont++;
     }
 
     archivo.close();
