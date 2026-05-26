@@ -155,7 +155,6 @@ int main() {
 
     cout << fixed << setprecision(2);
     cout << endl;
-    cout << "---- RETO 5: EL PASAJERO LEAL ----" << endl;
     cout << "Aerolinea utilizada: " << aerolinea << endl;
     cout << "Nombre Aeropuerto Origen:  " << aeropuertos[idOrigen].nombre << "  Codigo IATA Origen:  " << aeropuertos[idOrigen].iata << endl;
     cout << "Nombre Aeropuerto Destino: " << aeropuertos[idDestino].nombre << "  Codigo IATA Destino:  " << aeropuertos[idDestino].iata << endl;
@@ -164,7 +163,7 @@ int main() {
     cout << "Camino encontrado:" << endl;
 
     for (int id : resultado.second) {
-        cout << "- " << aeropuertos[id].nombre << " (" << aeropuertos[id].iata << ")" << endl;
+        cout << aeropuertos[id].nombre << " IATA:" << aeropuertos[id].iata << endl << endl;
     }
 
     return 0;
